@@ -1,0 +1,9 @@
+train_dir/
+.ropeproject/
+*.py[cod]
+*.sw[op]
+*.hy
+*.txt
+*.gz
+*.png
+*.gif
