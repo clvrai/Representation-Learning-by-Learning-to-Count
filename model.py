@@ -71,44 +71,40 @@ class Model(object):
             return loss, pair, unpair
         # }}}
 
-        # Classifier: takes images as input and tries to output class label [B, n]
+        # Counter: takes an image as input and outputs a counting vector
         def Counter(img, reuse=True, scope='Counter'):
             with tf.variable_scope(scope, reuse=reuse) as scope:
                 if not reuse: log.warn(scope.name)
 
                 _ = conv2d(img, 64, is_train, info=not reuse, name='conv1_1')
                 _ = conv2d(_, 64, is_train, info=not reuse, name='conv1_2')
-                _ = max_pool(_)
+                conv1 = max_pool(_)
 
-                _ = conv2d(_, 128, is_train, info=not reuse, name='conv2_1')
+                _ = conv2d(conv1, 128, is_train, info=not reuse, name='conv2_1')
                 _ = conv2d(_, 128, is_train, info=not reuse, name='conv2_2')
-                _ = max_pool(_)
+                conv2 = max_pool(_)
 
-                _ = conv2d(_, 256, is_train, info=not reuse, name='conv3_1')
+                _ = conv2d(conv2, 256, is_train, info=not reuse, name='conv3_1')
                 _ = conv2d(_, 256, is_train, info=not reuse, name='conv3_2')
                 _ = conv2d(_, 256, is_train, info=not reuse, name='conv3_3')
-                _ = max_pool(_)
+                conv3 = max_pool(_)
 
-                _ = conv2d(_, 512, is_train, info=not reuse, name='conv4_1')
+                _ = conv2d(conv3, 512, is_train, info=not reuse, name='conv4_1')
                 _ = conv2d(_, 512, is_train, info=not reuse, name='conv4_2')
                 _ = conv2d(_, 512, is_train, info=not reuse, name='conv4_3')
-                _ = max_pool(_)
+                conv4 = max_pool(_)
 
-                _ = conv2d(_, 512, is_train, info=not reuse, name='conv5_1')
+                _ = conv2d(conv4, 512, is_train, info=not reuse, name='conv5_1')
                 _ = conv2d(_, 512, is_train, info=not reuse, name='conv5_2')
                 _ = conv2d(_, 512, is_train, info=not reuse, name='conv5_3')
-                _ = max_pool(_)
+                conv5 = max_pool(_)
 
-                _ = fc(tf.reshape(_, [self.batch_size, -1]), 4096,
-                       is_train, info=not reuse, name='fc_1')
-                log.info('{} {}'.format(scope.name, _))
-                _ = fc(_, 4096, is_train, info=not reuse, name='fc_2')
-                log.info('{} {}'.format(scope.name, _))
-                _ = fc(_, 1000, is_train, info=not reuse, name='fc_3')
-                log.info('{} {}'.format(scope.name, _))
-                _ = fc(_, 1000, is_train, info=not reuse, batch_norm=False, name='fc_4')
-                log.info('{} {}'.format(scope.name, _))
-                return _
+                fc1 = fc(tf.reshape(conv5, [self.batch_size, -1]),
+                         4096, is_train, info=not reuse, name='fc_1')
+                fc2 = fc(fc1, 4096, is_train, info=not reuse, name='fc_2')
+                fc3 = fc(fc2, 1000, is_train, info=not reuse, name='fc_3')
+                fc4 = fc(fc3, 1000, is_train, info=not reuse, batch_norm=False, name='fc_4')
+                return [conv1, conv2, conv3, conv4, conv5, fc1, fc2, fc3, fc4]
 
         dh = int(h/2)
         dw = int(w/2)
@@ -124,7 +120,7 @@ class Model(object):
         dict = ['D_x', 'D_y', 'T_x_1', 'T_x_2', 'T_x_3', 'T_x_4']
         output = []
         for t in range(len(input)):
-            output.append(Counter(input[t], reuse=t > 0))
+            output.append(Counter(input[t], reuse=t > 0)[-1])
             tf.summary.image("img/{}".format(dict[t]), input[t])
 
         self.loss, self.loss_pair, self.loss_unpair = build_loss(output)

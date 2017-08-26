@@ -206,7 +206,7 @@ def main():
     config = parser.parse_args()
 
     if config.dataset == 'ImageNet':
-        import datasets.imagenet as dataset
+        import datasets.ImageNet as dataset
     elif config.dataset == 'SVHN':
         import datasets.svhn as dataset
     elif config.dataset == 'CIFAR10':
@@ -216,7 +216,7 @@ def main():
 
     dataset_train, dataset_test = dataset.create_default_splits()
 
-    image, _, label, _ = dataset_train.get_data(dataset_train.ids[0], dataset_train.ids[1])
+    image, _, label, _ = dataset_train.get_data(dataset_train.ids[0], dataset_train.ids[0])
     config.data_info = np.concatenate([np.asarray(image.shape), np.asarray(label.shape)])
 
     trainer = Trainer(config,
