@@ -72,10 +72,10 @@ class Dataset(object):
         )
 
 
-def create_default_splits(is_train=True):
+def create_default_splits(is_train=True, ratio=0.8):
     ids = all_ids()
 
-    num_trains = int(len(ids) * 0.8)
+    num_trains = int(len(ids) * ratio)
 
     dataset_train = Dataset(ids[:num_trains], name='train', is_train=False)
     dataset_test = Dataset(ids[num_trains:], name='test', is_train=False)
