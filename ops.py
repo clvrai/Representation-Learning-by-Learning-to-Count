@@ -17,14 +17,6 @@ def selu(x):
     return scale * tf.where(x > 0.0, x, alpha * tf.exp(x) - alpha)
 
 
-def huber_loss(labels, predictions, delta=1.0):
-    residual = tf.abs(predictions - labels)
-    condition = tf.less(residual, delta)
-    small_res = 0.5 * tf.square(residual)
-    large_res = delta * residual - 0.5 * tf.square(delta)
-    return tf.where(condition, small_res, large_res)
-
-
 def bn_act(input, is_train, batch_norm=True, activation_fn=None):
     _ = input
     if activation_fn is not None:
@@ -54,42 +46,9 @@ def conv2d(input, output_shape, is_train, info=False, k_h=3, k_w=3, s=1,
 
 def max_pool(input, info=False, k=2, s=2, padding='SAME', name='pool'):
     _ = tf.nn.max_pool(input, ksize=[1, k, k, 1],
-                          strides=[1, s, s, 1], padding=padding, name=name)
+                       strides=[1, s, s, 1], padding=padding, name=name)
     if info: log.info('{} {}'.format(name, _))
     return _
-
-
-def deconv2d(input, deconv_info, is_train, name="deconv2d",
-             stddev=0.02, activation_fn=tf.nn.relu, batch_norm=True):
-    with tf.variable_scope(name):
-        output_shape = deconv_info[0]
-        k = deconv_info[1]
-        s = deconv_info[2]
-        _ = layers.conv2d_transpose(
-            input,
-            num_outputs=output_shape,
-            weights_initializer=tf.truncated_normal_initializer(stddev=stddev),
-            biases_initializer=tf.zeros_initializer(),
-            kernel_size=[k, k], stride=[s, s], padding='SAME'
-        )
-
-    return bn_act(_, is_train, batch_norm=batch_norm, activation_fn=activation_fn)
-
-
-def bilinear_deconv2d(input, deconv_info, is_train, name="bilinear_deconv2d",
-                      stddev=0.02, activation_fn=tf.nn.relu, batch_norm=True):
-    with tf.variable_scope(name):
-        output_shape = deconv_info[0]
-        k = deconv_info[1]
-        s = deconv_info[2]
-        h = int(input.get_shape()[1]) * s
-        w = int(input.get_shape()[2]) * s
-        _ = tf.image.resize_bilinear(input, [h, w])
-        _ = conv2d(_, output_shape, is_train, k_h=k, s=1, k_w=k,
-                   batch_norm=False, activation_fn=None)
-
-    return bn_act(_, is_train, batch_norm=batch_norm, activation_fn=activation_fn)
-
 
 def residual_conv(input, num_filters, filter_size, stride, reuse=False,
                   pad='SAME', dtype=tf.float32, bias=False):
@@ -126,4 +85,5 @@ def fc(input, output_shape, is_train, info=False, batch_norm=True,
        activation_fn=tf.nn.relu, name="fc"):
     _ = slim.fully_connected(input, output_shape, activation_fn=None)
     if info: log.info('{} {}'.format(name, _))
-    return bn_act(_, is_train, batch_norm=batch_norm, activation_fn=activation_fn)
+    _ = bn_act(_, is_train, batch_norm=batch_norm, activation_fn=activation_fn)
+    return tf.identity(_, name=name)

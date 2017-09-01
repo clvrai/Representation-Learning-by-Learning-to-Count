@@ -7,7 +7,7 @@ from six.moves import xrange
 from util import log
 from pprint import pprint
 
-from model import Model
+from model_classifier import Model
 from input_ops import create_input_ops
 
 import os
@@ -25,7 +25,7 @@ class Trainer(object):
                  dataset_test):
         self.config = config
         hyper_parameter_str = config.dataset+'_lr_'+str(config.learning_rate)
-        self.train_dir = './train_dir/%s-%s-%s' % (
+        self.train_dir = './train_dir/classifier-%s-%s-%s' % (
             config.prefix,
             hyper_parameter_str,
             time.strftime("%Y%m%d-%H%M%S")
@@ -62,8 +62,15 @@ class Trainer(object):
         self.check_op = tf.no_op()
 
         # --- checkpoint and monitoring ---
-        log.warn("********* var ********** ")
-        slim.model_analyzer.analyze_vars(tf.trainable_variables(), print_info=True)
+        all_vars = tf.global_variables()
+
+        counter_var = [v for v in all_vars if v.name.startswith('Counter')]
+        log.warn("********* Counter var ********** ")
+        slim.model_analyzer.analyze_vars(counter_var, print_info=True)
+
+        classifier_var = [v for v in all_vars if not v.name.startswith('Counter')]
+        log.warn("********* Classifier var ********** ")
+        slim.model_analyzer.analyze_vars(classifier_var, print_info=True)
 
         self.optimizer = tf.contrib.layers.optimize_loss(
             loss=self.model.loss,
@@ -71,11 +78,13 @@ class Trainer(object):
             learning_rate=self.learning_rate,
             optimizer=tf.train.AdamOptimizer,
             clip_gradients=20.0,
+            variables=classifier_var,
             name='optimizer_loss',
         )
 
         self.summary_op = tf.summary.merge_all()
 
+        self.pretrain_saver = tf.train.Saver(var_list=counter_var, max_to_keep=1)
         self.saver = tf.train.Saver(max_to_keep=1000)
         self.summary_writer = tf.summary.FileWriter(self.train_dir)
 
@@ -100,10 +109,12 @@ class Trainer(object):
         self.session = self.supervisor.prepare_or_wait_for_session(config=session_config)
 
         self.ckpt_path = config.checkpoint
-        if self.ckpt_path is not None:
+        try:
             log.info("Checkpoint path: %s", self.ckpt_path)
-            self.saver.restore(self.session, self.ckpt_path)
+            self.pretrain_saver.restore(self.session, self.ckpt_path)
             log.info("Loaded the pretrain parameters from the provided checkpoint path")
+        except:
+            log.error('Failed to load the pre-trained cgheckpoint from {}'.format(self.ckpt_path))
 
     def train(self, dataset):
         log.infov("Training Starts!")
@@ -114,11 +125,11 @@ class Trainer(object):
         output_save_step = 1000
 
         for s in xrange(max_steps):
-            step, summary, loss, loss_pair, loss_unpair, step_time = \
+            step, summary, loss, accuracy, step_time = \
                 self.run_single_step(self.batch_train, dataset, step=s, is_train=True)
 
             if s % 10 == 0:
-                self.log_step_message(step, loss, loss_pair, loss_unpair, step_time)
+                self.log_step_message(step, loss, accuracy, step_time)
                 self.summary_writer.add_summary(summary, global_step=step)
 
             if s % output_save_step == 0:
@@ -139,17 +150,16 @@ class Trainer(object):
         batch_chunk = self.session.run(batch)
 
         fetch = [self.global_step, self.summary_op, self.model.loss,
-                 self.model.loss_pair, self.model.loss_unpair,
-                 self.check_op, self.optimizer]
+                 self.model.accuracy, self.check_op, self.optimizer]
 
         fetch_values = self.session.run(
             fetch, feed_dict=self.model.get_feed_dict(batch_chunk, step=step)
         )
-        [step, summary, loss, loss_pair, loss_unpair] = fetch_values[:5]
+        [step, summary, loss, accuracy] = fetch_values[:4]
 
         _end_time = time.time()
 
-        return step, summary, loss, loss_pair, loss_unpair, (_end_time - _start_time)
+        return step, summary, loss, accuracy, (_end_time - _start_time)
 
     def run_test(self, batch, is_train=False):
 
@@ -161,21 +171,18 @@ class Trainer(object):
 
         return loss
 
-    def log_step_message(self, step, loss, loss_pair,
-                         loss_unpair, step_time, is_train=True):
+    def log_step_message(self, step, loss, accuracy, step_time, is_train=True):
         if step_time == 0:
             step_time = 0.001
         log_fn = (is_train and log.info or log.infov)
         log_fn((" [{split_mode:5s} step {step:4d}] " +
                 "Loss: {loss:.5f} " +
-                "Loss pair: {loss_pair:.5f} " +
-                "Loss unpair: {loss_unpair:.5f} " +
+                "Accuracy: {accuracy:.5f} " +
                 "({sec_per_batch:.3f} sec/batch, {instance_per_sec:.3f} instances/sec) "
                 ).format(split_mode=(is_train and 'train' or 'val'),
                          step=step,
                          loss=loss,
-                         loss_pair=loss_pair,
-                         loss_unpair=loss_unpair,
+                         accuracy=accuracy,
                          sec_per_batch=step_time,
                          instance_per_sec=self.batch_size / step_time
                          )
@@ -195,7 +202,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--prefix', type=str, default='default')
-    parser.add_argument('--checkpoint', type=str, default=None)
+    parser.add_argument('--checkpoint', type=str)
     parser.add_argument('--dataset', type=str, default='ImageNet', choices=['ImageNet', 'SVHN', 'CIFAR10'])
     parser.add_argument('--learning_rate', type=float, default=1e-4)
     parser.add_argument('--alpha', type=float, default=1.0)
@@ -211,6 +218,9 @@ def main():
         import datasets.cifar10 as dataset
     else:
         raise ValueError(config.dataset)
+
+    if not config.checkpoint:
+        raise ValueError('Please specify a valid checkpoint: {}'.format(config.checkpoint))
 
     dataset_train, dataset_test = dataset.create_default_splits()
 

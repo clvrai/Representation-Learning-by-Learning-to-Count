@@ -4,8 +4,6 @@ from __future__ import print_function
 
 import os.path
 import numpy as np
-import h5py
-import imageio
 from skimage.io import imread
 import scipy.misc as sm
 from datasets.imagenet.map import class2num
@@ -32,7 +30,7 @@ class Dataset(object):
         file = os.path.join(__IMAGENET_IMG_PATH__, self._ids[0])
 
         try:
-            imageio.imread(file)
+            imread(file)
         except:
             raise IOError('Dataset not found. Please make sure the dataset was downloaded.')
         log.info("Reading Done: %s", file)
@@ -44,7 +42,8 @@ class Dataset(object):
 
         y = np.random.randint(img.shape[0]-114)
         x = np.random.randint(img.shape[1]-114)
-        img = img[y:y+114, x:x+114, :]
+        img = img[y:y+114, x:x+114, :3]
+        # assert img.shape[-1] == 3, '{} dimension mismatch {}'.format(id, img.shape[-1])
 
         l = np.zeros(1000)
         l[class2num[id.split('/')[-2]]] = 1
