@@ -9,7 +9,7 @@ This project is a [Tensorflow](https://www.tensorflow.org/) implementation of [R
 
 In particular, it exploits the fact that the number of visual primitives presented in an image should be invariant to transformations such as scaling, rotation, etc. Given this fact, the model is able to learn meaningful representations by minimizing a contrastive loss where we enforce that the counting feature should be different between a pair of randomly selected images. During the fine-tuning phase, we train a set of linear classifiers to perform an image classification task on ImageNet based on learned representations to verify the effectiveness of the proposed framework. An illustration of the proposed framework is as follows.
 
-<img src="figure/framework.png" height="450"/>
+<img src="figure/framework.png" height="450" style="float:middle"/>
 
 The implemented model is trained and tested on [ImageNet](http://www.image-net.org/). 
 
@@ -65,7 +65,7 @@ $ mkdir datasets/YOUR_DATASET
 ## Training details
 
 ### Learning the representations
-<img src="figure/training.png" height="300"/>
+<img src="figure/training.png" height="400" style="float:middle"/>
 
 ## Related works
 
