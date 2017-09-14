@@ -76,8 +76,6 @@ class Evaler(object):
         log.info("max_steps = %d", max_steps)
 
         coord = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(self.session,
-                                               coord=coord, start=True)
 
         # try:
         accuracy_total = []

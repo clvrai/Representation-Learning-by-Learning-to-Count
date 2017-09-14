@@ -76,26 +76,26 @@ class Model(object):
                 if not reuse: log.warn(scope.name)
 
                 _ = conv2d(img, 64, is_train, info=not reuse, name='conv1_1')
-                _ = conv2d(_, 64, is_train, info=not reuse, name='conv1_2')
+                # _ = conv2d(_, 64, is_train, info=not reuse, name='conv1_2')
                 conv1 = max_pool(_, name='conv1')
 
                 _ = conv2d(conv1, 128, is_train, info=not reuse, name='conv2_1')
-                _ = conv2d(_, 128, is_train, info=not reuse, name='conv2_2')
+                # _ = conv2d(_, 128, is_train, info=not reuse, name='conv2_2')
                 conv2 = max_pool(_, name='conv2')
 
                 _ = conv2d(conv2, 256, is_train, info=not reuse, name='conv3_1')
-                _ = conv2d(_, 256, is_train, info=not reuse, name='conv3_2')
+                # _ = conv2d(_, 256, is_train, info=not reuse, name='conv3_2')
                 _ = conv2d(_, 256, is_train, info=not reuse, name='conv3_3')
                 conv3 = max_pool(_, name='conv3')
 
                 _ = conv2d(conv3, 512, is_train, info=not reuse, name='conv4_1')
-                _ = conv2d(_, 512, is_train, info=not reuse, name='conv4_2')
+                # _ = conv2d(_, 512, is_train, info=not reuse, name='conv4_2')
                 _ = conv2d(_, 512, is_train, info=not reuse, name='conv4_3')
                 conv4 = max_pool(_, name='conv4')
 
                 _ = conv2d(conv4, 512, is_train, info=not reuse, name='conv5_1')
                 _ = conv2d(_, 512, is_train, info=not reuse, name='conv5_2')
-                _ = conv2d(_, 512, is_train, info=not reuse, name='conv5_3')
+                # _ = conv2d(_, 512, is_train, info=not reuse, name='conv5_3')
                 conv5 = max_pool(_, name='conv5')
 
                 fc1 = fc(tf.reshape(conv5, [self.batch_size, -1]),

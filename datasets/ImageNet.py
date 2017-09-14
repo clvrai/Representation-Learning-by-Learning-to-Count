@@ -42,7 +42,7 @@ class Dataset(object):
 
         y = np.random.randint(img.shape[0]-114)
         x = np.random.randint(img.shape[1]-114)
-        img = img[y:y+114, x:x+114, :3]
+        img = img[y:y+112, x:x+112, :3]
         # assert img.shape[-1] == 3, '{} dimension mismatch {}'.format(id, img.shape[-1])
 
         l = np.zeros(1000)
