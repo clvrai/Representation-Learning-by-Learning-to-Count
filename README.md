@@ -5,41 +5,65 @@ As part of the implementation series of [Joseph Lim's group at USC](http://csail
 This project is implemented by [Shao-Hua Sun](http://shaohua0116.github.io) and the codes have been reviewed by --- before being published.
 
 ## Descriptions
-This project is a [Tensorflow](https://www.tensorflow.org/) implementation of [Representation Learning by Learning to Count](https://arxiv.org/abs/1708.06734). 
+This project is a [Tensorflow](https://www.tensorflow.org/) implementation of [Representation Learning by Learning to Count](https://arxiv.org/abs/1708.06734). This paper proposes a novel framework for representation learning, where we are interested in learning good representations of visual content, by utilizing the concept of counting visual primitives. In particular, it exploits the fact that the number of visual primitives presented in an image should be invariant to transformation such as scaling, rotation, etc. Given this fact, the model is able to learn meaningful representations by minimizing a contrastive loss where we enforce that the counting feature should be different between a pair of randomly selected images. During the fine-tuning phase, we train a set of linear classifiers to perform an image classification task on ImageNet based on learned representations to verify the effectiveness of the proposed framework. An illustration of the proposed framework is as follows.
 
-<!-- <img src="figure/" height="300"/> -->
+<img src="figure/framework.png" height="450"/>
 
 The implemented model is trained and tested on [ImageNet](http://www.image-net.org/). 
 
-Note that this implementation only follows the main idea of the original paper while differing a lot in implementation details such as model architectures, hyperparameters, applied optimizer, etc. 
+Note that this implementation only follows the main idea of the original paper while differing a lot in implementation details such as model architectures, hyperparameters, applied optimizer, etc. For example, the implementation adopt a [VGG-19](https://arxiv.org/abs/1409.1556) architecture instead of an [AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf) which is used in the origianl paper.
 
 \*This code is still being developed and subject to change.
 
 ## Prerequisites
 
-- Python 2.7 or Python 3.3+
+- Python 2.7
 - [Tensorflow 1.2.0](https://github.com/tensorflow/tensorflow/tree/r1.2)
 - [SciPy](http://www.scipy.org/install.html)
 - [NumPy](http://www.numpy.org/)
 - [PIL](http://pillow.readthedocs.io/en/3.1.x/installation.html)
 - [h5py](http://docs.h5py.org/en/latest/)
-- [progressbar](http://progressbar-2.readthedocs.io/en/latest/index.html)
 - [colorlog](https://github.com/borntyping/python-colorlog)
 - [imageio](https://imageio.github.io/)
 
 ## Usage
 
 ### Datasets
+The ImageNet dataset is located in the Downloads section of the [website](http://image-net.org/download-images). Please specify the path to the downloaded dataset by changing the variable `__IMAGENET_IMG_PATH__` in `datasets/ImageNet.py`. Also, please provide a list of file names for trainings in the directory `__IMAGENET_LIST_PATH__` with the file name `train_list.txt`.
 
 ### Train the models
+Train models with downloaded datasets. For example:
+```bash
+$ python trainer.py --prefix train_from_scratch --learning_rate 1e-4 --batch_size 32
+```
+
+### Fine-tune the models
+Train models with downloaded datasets. For example:
+```bash
+$ python trainer_classifier.py --prefix fine_tune --learning_rate 1e-5 --batch_size 32 --checkpoint train_dir/train_from_scratch-ImageNet_lr_0.003-20170828-172936/model-10001
+```
+Note that you must specify a checkpoint storing the pretrained model.
 
 ### Test the models
+```bash
+$ python evaler.py --checkpoint train_dir/fine_tune-ImageNet_lr_0.0001-20170915-172936/model-10001
+```
 
 ### Train and test your own datasets:
 
-## Results
+* Create a directory
+```bash
+$ mkdir datasets/YOUR_DATASET
+```
+* Create a input helper `datasets/YOUR_DATASET.py` following the format of `datasets/ImageNet.py`
+* Specify the path ot the image and the list of file names.
+* Modify `trainer.py`.
+* Finally, test your trained models
 
 ## Training details
+
+### Learning the representations
+<img src="figure/training.png" height="300"/>
 
 ## Related works
 

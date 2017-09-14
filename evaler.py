@@ -77,7 +77,6 @@ class Evaler(object):
 
         coord = tf.train.Coordinator()
 
-        # try:
         accuracy_total = []
         for s in xrange(max_steps):
             step, accuracy, step_time = \
@@ -87,15 +86,6 @@ class Evaler(object):
         avg = np.average(accuracy_total)
         log.infov("Average accuracy: {}%".format(avg*100))
 
-        # except Exception as e:
-        #     coord.request_stop(e)
-        """
-        coord.request_stop()
-        try:
-            coord.join(threads, stop_grace_period_secs=3)
-        except RuntimeError as e:
-            log.warn(str(e))
-        """
         log.infov("Evaluation complete.")
 
     def run_single_step(self, batch, step=None, is_train=True):
@@ -139,18 +129,14 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=16)
-    parser.add_argument('--checkpoint_path', type=str)
+    parser.add_argument('--checkpoint', type=str)
     parser.add_argument('--train_dir', type=str)
-    parser.add_argument('--dataset', type=str, default='ImageNet', choices=['ImageNet', 'SVHN', 'CIFAR10'])
+    parser.add_argument('--dataset', type=str, default='ImageNet', choices=['ImageNet'])
     parser.add_argument('--data_id', nargs='*', default=None)
     config = parser.parse_args()
 
     if config.dataset == 'ImageNet':
         import datasets.ImageNet as dataset
-    elif config.dataset == 'SVHN':
-        import datasets.svhn as dataset
-    elif config.dataset == 'CIFAR10':
-        import datasets.cifar10 as dataset
     else:
         raise ValueError(config.dataset)
 

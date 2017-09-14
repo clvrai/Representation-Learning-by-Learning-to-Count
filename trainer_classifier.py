@@ -203,19 +203,13 @@ def main():
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--prefix', type=str, default='default')
     parser.add_argument('--checkpoint', type=str)
-    parser.add_argument('--dataset', type=str, default='ImageNet', choices=['ImageNet', 'SVHN', 'CIFAR10'])
+    parser.add_argument('--dataset', type=str, default='ImageNet', choices=['ImageNet'])
     parser.add_argument('--learning_rate', type=float, default=1e-4)
-    parser.add_argument('--alpha', type=float, default=1.0)
     parser.add_argument('--lr_weight_decay', action='store_true', default=False)
-    parser.add_argument('--dump_result', action='store_true', default=False)
     config = parser.parse_args()
 
     if config.dataset == 'ImageNet':
         import datasets.ImageNet as dataset
-    elif config.dataset == 'SVHN':
-        import datasets.svhn as dataset
-    elif config.dataset == 'CIFAR10':
-        import datasets.cifar10 as dataset
     else:
         raise ValueError(config.dataset)
 
