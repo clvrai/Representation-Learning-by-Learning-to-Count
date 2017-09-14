@@ -5,13 +5,15 @@ As part of the implementation series of [Joseph Lim's group at USC](http://csail
 This project is implemented by [Shao-Hua Sun](http://shaohua0116.github.io) and the codes have been reviewed by --- before being published.
 
 ## Descriptions
-This project is a [Tensorflow](https://www.tensorflow.org/) implementation of [Representation Learning by Learning to Count](https://arxiv.org/abs/1708.06734). This paper proposes a novel framework for representation learning, where we are interested in learning good representations of visual content, by utilizing the concept of counting visual primitives. In particular, it exploits the fact that the number of visual primitives presented in an image should be invariant to transformation such as scaling, rotation, etc. Given this fact, the model is able to learn meaningful representations by minimizing a contrastive loss where we enforce that the counting feature should be different between a pair of randomly selected images. During the fine-tuning phase, we train a set of linear classifiers to perform an image classification task on ImageNet based on learned representations to verify the effectiveness of the proposed framework. An illustration of the proposed framework is as follows.
+This project is a [Tensorflow](https://www.tensorflow.org/) implementation of [Representation Learning by Learning to Count](https://arxiv.org/abs/1708.06734). This paper proposes a novel framework for representation learning, where we are interested in learning good representations of visual content, by utilizing the concept of counting visual primitives. 
+
+In particular, it exploits the fact that the number of visual primitives presented in an image should be invariant to transformations such as scaling, rotation, etc. Given this fact, the model is able to learn meaningful representations by minimizing a contrastive loss where we enforce that the counting feature should be different between a pair of randomly selected images. During the fine-tuning phase, we train a set of linear classifiers to perform an image classification task on ImageNet based on learned representations to verify the effectiveness of the proposed framework. An illustration of the proposed framework is as follows.
 
 <img src="figure/framework.png" height="450"/>
 
 The implemented model is trained and tested on [ImageNet](http://www.image-net.org/). 
 
-Note that this implementation only follows the main idea of the original paper while differing a lot in implementation details such as model architectures, hyperparameters, applied optimizer, etc. For example, the implementation adopt a [VGG-19](https://arxiv.org/abs/1409.1556) architecture instead of an [AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf) which is used in the origianl paper.
+Note that this implementation only follows the main idea of the original paper while differing a lot in implementation details such as model architectures, hyperparameters, applied optimizer, etc. For example, the implementation adopts the [VGG-19](https://arxiv.org/abs/1409.1556) architecture instead of [AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf) which is used in the origianl paper.
 
 \*This code is still being developed and subject to change.
 
@@ -67,6 +69,9 @@ $ mkdir datasets/YOUR_DATASET
 
 ## Related works
 
+* [Representation Learning: A Review and New Perspectives](https://arxiv.org/abs/1206.5538) by Bengio et. al.
+* [Unsupervised Learning of Visual Representations by Solving Jigsaw Puzzles](https://arxiv.org/abs/1603.09246) by Noroozi et. al.
+* [Unsupervised Representation Learning by Sorting Sequence](http://vllab1.ucmerced.edu/~hylee/OPN/) by Lee et. al.
 * My implementation of [Generative Latent Optimization](https://github.com/shaohua0116/Generative-Latent-Optimization-Tensorflow)
 
 ## Author
