@@ -64,7 +64,7 @@ $ mkdir datasets/YOUR_DATASET
 ```bash
 $ python trainer.py --dataset YOUR_DATASET
 $ python trainer_classifier.py --dataset YOUR_DATASET --checkpoint train_dir/train_from_scratch-YOUR_DATASET_lr_0.003-20170828-172936/model-10001
-$ python evaler.py --checkpoint train_dir/fine_tune-YOUR_DATASET_lr_0.0001-20170915-172936/model-10001
+$ python evaler.py --dataset YOUR_DATASET --checkpoint train_dir/fine_tune-YOUR_DATASET_lr_0.0001-20170915-172936/model-10001
 ```
 
 ## Training details
