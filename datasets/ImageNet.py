@@ -10,7 +10,7 @@ from datasets.imagenet.map import class2num
 
 from util import log
 
-__IMAGENET_IMG_PATH__ = '/home/walter/ImageNet/ILSVRC/Data/CLS-LOC'
+__IMAGENET_IMG_PATH__ = '/YOUR_IMAGENET_PATH/ILSVRC/Data/CLS-LOC'
 __IMAGENET_LIST_PATH__ = './datasets/imagenet'
 
 rs = np.random.RandomState(123)
