@@ -2,7 +2,7 @@
 
 As part of the implementation series of [Joseph Lim's group at USC](http://csail.mit.edu/~lim), our motivation is to accelerate (or sometimes delay) research in the AI community by promoting open-source projects. To this end, we implement state-of-the-art research papers, and publicly share them with concise reports. Please visit our [group github site](https://github.com/gitlimlab) for other projects.
 
-This project is implemented by [Shao-Hua Sun](http://shaohua0116.github.io) and the codes have been reviewed by --- before being published.
+This project is implemented by [Shao-Hua Sun](http://shaohua0116.github.io) and the codes have been reviewed by Te-Lin Wu before being published.
 
 ## Descriptions
 This project is a [Tensorflow](https://www.tensorflow.org/) implementation of [Representation Learning by Learning to Count](https://arxiv.org/abs/1708.06734). This paper proposes a novel framework for representation learning, where we are interested in learning good representations of visual content, by utilizing the concept of counting visual primitives. 
@@ -60,7 +60,12 @@ $ mkdir datasets/YOUR_DATASET
 * Create a input helper `datasets/YOUR_DATASET.py` following the format of `datasets/ImageNet.py`
 * Specify the path ot the image and the list of file names.
 * Modify `trainer.py`.
-* Finally, test your trained models
+* Finally, train and test your models
+```bash
+$ python trainer.py --dataset YOUR_DATASET
+$ python trainer_classifier.py --dataset YOUR_DATASET --checkpoint train_dir/train_from_scratch-YOUR_DATASET_lr_0.003-20170828-172936/model-10001
+$ python evaler.py --checkpoint train_dir/fine_tune-YOUR_DATASET_lr_0.0001-20170915-172936/model-10001
+```
 
 ## Training details
 
