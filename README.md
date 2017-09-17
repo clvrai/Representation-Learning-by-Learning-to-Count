@@ -36,17 +36,17 @@ The ImageNet dataset is located in the Downloads section of the [website](http:/
 ### Train the models
 Train models with downloaded datasets. For example:
 ```bash
-$ python trainer.py --prefix train_from_scratch --learning_rate 1e-4 --batch_size 32
+$ python trainer.py --prefix train_from_scratch --learning_rate 1e-4 --batch_size 8
 ```
 
 ### Fine-tune the models
 Train models with downloaded datasets. For example:
 ```bash
-$ python trainer_classifier.py --prefix fine_tune --learning_rate 1e-5 --batch_size 32 --checkpoint train_dir/train_from_scratch-ImageNet_lr_0.003-20170828-172936/model-10001
+$ python trainer_classifier.py --prefix fine_tune --learning_rate 1e-5 --batch_size 8 --checkpoint train_dir/train_from_scratch-ImageNet_lr_0.003-20170828-172936/model-10001
 ```
-Note that you must specify a checkpoint storing the pretrained model.
+Note that you must specify a checkpoint storing the pretrained model. Also, linear classifiers are applied to all the features including `conv1`, `conv2`, ..., `fc1`, `fc2`, ..., etc, coming from the pretrained model with the same learning rate, optimizers, etc. To fine tune the model only with a certain feature, please specify it in the code `model_classifier.py`.
 
-### Test the models
+### Test the fine-tuned models
 ```bash
 $ python evaler.py --checkpoint train_dir/fine_tune-ImageNet_lr_0.0001-20170915-172936/model-10001
 ```
@@ -77,7 +77,6 @@ $ python evaler.py --dataset YOUR_DATASET --checkpoint train_dir/fine_tune-YOUR_
 * [Representation Learning: A Review and New Perspectives](https://arxiv.org/abs/1206.5538) by Bengio et. al.
 * [Unsupervised Learning of Visual Representations by Solving Jigsaw Puzzles](https://arxiv.org/abs/1603.09246) by Noroozi et. al.
 * [Unsupervised Representation Learning by Sorting Sequence](http://vllab1.ucmerced.edu/~hylee/OPN/) by Lee et. al.
-* My implementation of [Generative Latent Optimization](https://github.com/shaohua0116/Generative-Latent-Optimization-Tensorflow)
 
 ## Author
 

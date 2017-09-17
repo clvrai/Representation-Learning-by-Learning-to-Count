@@ -1,5 +1,4 @@
 import tensorflow as tf
-import tensorflow.contrib.layers as layers
 import tensorflow.contrib.slim as slim
 from util import log
 
@@ -49,6 +48,7 @@ def max_pool(input, info=False, k=2, s=2, padding='SAME', name='pool'):
                        strides=[1, s, s, 1], padding=padding, name=name)
     if info: log.info('{} {}'.format(name, _))
     return _
+
 
 def residual_conv(input, num_filters, filter_size, stride, reuse=False,
                   pad='SAME', dtype=tf.float32, bias=False):

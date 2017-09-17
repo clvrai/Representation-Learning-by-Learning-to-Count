@@ -76,6 +76,8 @@ class Evaler(object):
         log.info("max_steps = %d", max_steps)
 
         coord = tf.train.Coordinator()
+        threads = tf.train.start_queue_runners(self.session,
+                                               coord=coord, start=True)
 
         accuracy_total = []
         for s in xrange(max_steps):
@@ -129,7 +131,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=16)
-    parser.add_argument('--checkpoint', type=str)
+    parser.add_argument('--checkpoint_path', type=str)
     parser.add_argument('--train_dir', type=str)
     parser.add_argument('--dataset', type=str, default='ImageNet', choices=['ImageNet'])
     parser.add_argument('--data_id', nargs='*', default=None)
